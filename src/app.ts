@@ -1,15 +1,9 @@
 import { PORT, NODE_ENV } from "config";
-import express from "express";
-import deserializeUser from "middleware/deserializeUser";
-import routes from "./routes";
 import connect from "utils/db.utils";
 import logger from "utils/logger.utils";
+import createServer from "utils/server.utils";
 
-const app = express();
-
-app.use(express.json());
-
-app.use(deserializeUser);
+const app = createServer();
 
 app.listen(PORT, async () => {
   logger.info(
@@ -17,6 +11,4 @@ app.listen(PORT, async () => {
   );
 
   await connect();
-
-  routes(app);
 });
