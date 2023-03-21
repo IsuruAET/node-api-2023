@@ -11,6 +11,7 @@ export interface UserInput {
 export interface UserDocument extends UserInput, mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
+  hashedPassword(next: any): Promise<Boolean>;
   comparePassword(candidatePassword: string): Promise<Boolean>;
 }
 
@@ -23,7 +24,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next: any) {
+userSchema.methods.hashedPassword = async function (next: any): Promise<any> {
   let user = this as UserDocument;
 
   if (!user.isModified("password")) {
@@ -35,13 +36,15 @@ userSchema.pre("save", async function (next: any) {
   user.password = hash;
 
   return next();
-});
+};
+
+userSchema.pre("save", userSchema.methods.hashedPassword);
 
 userSchema.methods.comparePassword = async function (
   candidatePassword: string
 ): Promise<boolean> {
   const user = this as UserDocument;
-  return bcrypt.compare(candidatePassword, user.password).catch((e) => false);
+  return bcrypt.compare(candidatePassword, user.password);
 };
 
 const UserModel = mongoose.model<UserDocument>("User", userSchema);

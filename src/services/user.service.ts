@@ -3,13 +3,9 @@ import { FilterQuery } from "mongoose";
 import UserModel, { UserDocument, UserInput } from "models/user.model";
 
 export const createUser = async (input: UserInput) => {
-  try {
-    const user = await UserModel.create(input);
+  const user = await UserModel.create(input);
 
-    return omit(user.toJSON(), "password");
-  } catch (error: any) {
-    throw new Error(error);
-  }
+  return omit(user.toJSON(), "password");
 };
 
 export const validatePassword = async ({
