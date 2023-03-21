@@ -5,6 +5,7 @@ import {
   ACCESS_TOKEN_PUBLIC_KEY,
   REFRESH_TOKEN_PUBLIC_KEY,
 } from "config";
+import logger from "./logger.utils";
 
 type PrivateKEY = "accessTokenPrivateKey" | "refreshTokenPrivateKey";
 type PublicKEY = "accessTokenPublicKey" | "refreshTokenPublicKey";
@@ -51,7 +52,7 @@ export const verifyJwt = (token: string, keyName: PublicKEY) => {
       decoded,
     };
   } catch (e: any) {
-    console.error(e);
+    logger.error(e);
     return {
       valid: false,
       expired: e.message === "jwt expired",

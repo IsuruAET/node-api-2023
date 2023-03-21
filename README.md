@@ -1,11 +1,16 @@
 # node-api-2023
 
+### Node environment
+
+Use Node stable version (Higher than `18.*`)
+
 ### Create environment variable files
 
 Create development, production and test env files with following names. Set values using .env.template
-.env.development
-.env.production
-.env.test
+
+- .env.development
+- .env.production
+- .env.test
 
 ### Generate RSA key-pair
 

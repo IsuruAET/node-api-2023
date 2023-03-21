@@ -17,7 +17,7 @@ export const createUserSessionHandler = async (req: Request, res: Response) => {
   }
 
   // Create a session
-  const session = await createSession(user._id, req.get("user-agent") || "");
+  const session = await createSession(user._id, req.get("user-agent"));
 
   // Create an access token
   const accessToken = signJwt(
@@ -34,7 +34,7 @@ export const createUserSessionHandler = async (req: Request, res: Response) => {
   );
 
   // Return access and refresh token
-  return res.send({ accessToken, refreshToken });
+  return res.status(201).send({ accessToken, refreshToken });
 };
 
 export const getUserSessionsHandler = async (req: Request, res: Response) => {

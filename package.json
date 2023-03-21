@@ -7,7 +7,7 @@
     "start": "NODE_ENV=development ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/app.ts",
     "start:prod": "NODE_ENV=production ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/app.ts",
     "start:test": "NODE_ENV=test ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/app.ts",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --coverage"
   },
   "author": "",
   "license": "ISC",

@@ -23,12 +23,10 @@ import { createSessionSchema } from "schemas/session.schema";
 import { createUserSchema } from "schemas/user.schema";
 
 const routes = (app: Express) => {
-  // Health Check
-  app.get("/healthcheck", (req: Request, res: Response) => res.sendStatus(200));
-
-  // Auth
+  // User
   app.post("/api/users", validateResource(createUserSchema), createUserHandler);
 
+  // Session
   app.post(
     "/api/sessions",
     validateResource(createSessionSchema),
