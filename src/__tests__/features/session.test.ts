@@ -82,7 +82,7 @@ describe("session", () => {
         // @ts-ignore
         await createUserSessionHandler(req, res);
         expect(res.status).toHaveBeenCalledWith(401);
-        expect(send).toHaveBeenCalledWith("Invalid email or password");
+        expect(send).toHaveBeenCalledWith("Invalid credentials");
       });
     });
   });
@@ -156,10 +156,10 @@ describe("session", () => {
     });
 
     describe("given the user is not logged in", () => {
-      it("should return a 403", async () => {
+      it("should return a 401", async () => {
         const { statusCode } = await supertest(app).get("/api/sessions");
 
-        expect(statusCode).toBe(403);
+        expect(statusCode).toBe(401);
       });
     });
   });
@@ -184,10 +184,10 @@ describe("session", () => {
     });
 
     describe("given the user is not logged in", () => {
-      it("should return a 403", async () => {
+      it("should return a 401", async () => {
         const { statusCode } = await supertest(app).delete("/api/sessions");
 
-        expect(statusCode).toBe(403);
+        expect(statusCode).toBe(401);
       });
     });
   });
@@ -260,19 +260,19 @@ describe("session", () => {
     });
 
     describe("given invalid refresh token", () => {
-      it("should return false", async () => {
+      it("should return empty string", async () => {
         const refreshJwt = signJwt(userPayload, "refreshTokenPrivateKey");
 
         const reIssuedJwt = await SessionService.reIssueAccessToken({
           refreshToken: refreshJwt,
         });
 
-        expect(reIssuedJwt).toBe(false);
+        expect(reIssuedJwt).toBe("");
       });
     });
 
     describe("given logout session", () => {
-      it("should return false", async () => {
+      it("should return empty string", async () => {
         const user = await UserService.createUser(userInput);
 
         const session = await SessionService.createSession(
@@ -294,7 +294,7 @@ describe("session", () => {
           refreshToken: refreshJwt,
         });
 
-        expect(reIssuedJwt).toBe(false);
+        expect(reIssuedJwt).toBe("");
       });
     });
   });
