@@ -14,8 +14,6 @@ const deserializeUser = async (
   );
 
   if (accessToken) {
-    const refreshToken: any = get(req, "headers.x-refresh");
-
     const { decoded, expired } = verifyJwt(accessToken, "accessTokenPublicKey");
 
     if (decoded) {
@@ -23,23 +21,26 @@ const deserializeUser = async (
       return next();
     }
 
+    const refreshToken: any = get(req, "headers.x-refresh");
+
     if (expired && refreshToken) {
       const newAccessToken = await reIssueAccessToken({ refreshToken });
 
       if (newAccessToken) {
-        res.setHeader("x-access-token", newAccessToken);
+        res.setHeader("authorization", newAccessToken);
+
+        const result = verifyJwt(
+          newAccessToken as string,
+          "accessTokenPublicKey"
+        );
+
+        res.locals.user = result.decoded;
+        return next();
       }
-
-      const result = verifyJwt(
-        newAccessToken as string,
-        "accessTokenPublicKey"
-      );
-
-      res.locals.user = result.decoded;
-      return next();
     }
   }
-  return next();
+
+  return res.status(401).send("Authorization denied");
 };
 
 export default deserializeUser;

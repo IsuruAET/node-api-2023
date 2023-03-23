@@ -7,6 +7,7 @@ import UserModel from "models/user.model";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { omit } from "lodash";
 import { credInput, userInput, userPayload } from "../fixtures/user.fixture";
+import { signJwt } from "utils/jwt.utils";
 
 const app = createServer();
 
@@ -62,17 +63,13 @@ describe("user", () => {
 
     describe("given the user service throws", () => {
       it("should return a 409 error", async () => {
-        const createUserServiceMock = jest
-          .spyOn(UserService, "createUser")
-          .mockRejectedValueOnce("Oh no! :(");
+        await UserService.createUser(userInput);
 
-        const { statusCode } = await supertest(app)
+        const { statusCode, body } = await supertest(app)
           .post("/api/users")
           .send(userInput);
 
         expect(statusCode).toBe(409);
-
-        expect(createUserServiceMock).toHaveBeenCalled();
       });
     });
   });
@@ -186,6 +183,25 @@ describe("user", () => {
         });
 
         expect(omit(sessionUser, "password")).toEqual(user);
+      });
+    });
+  });
+
+  describe("get auth user", () => {
+    it("should return a 200 status and user payload", async () => {
+      const jwt = signJwt(userPayload, "accessTokenPrivateKey");
+
+      const { statusCode, body } = await supertest(app)
+        .get("/api/auth")
+        .set("Authorization", `Bearer ${jwt}`);
+
+      expect(statusCode).toBe(200);
+
+      expect(body).toEqual({
+        _id: expect.any(String),
+        email: "test@example.com",
+        name: "Test User",
+        iat: expect.any(Number),
       });
     });
   });

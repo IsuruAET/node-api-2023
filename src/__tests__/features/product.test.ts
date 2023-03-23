@@ -53,10 +53,10 @@ describe("product", () => {
     });
 
     describe("given the user is not logged in", () => {
-      it("should return a 403", async () => {
+      it("should return a 401", async () => {
         const { statusCode } = await supertest(app).post("/api/products");
 
-        expect(statusCode).toBe(403);
+        expect(statusCode).toBe(401);
       });
     });
   });

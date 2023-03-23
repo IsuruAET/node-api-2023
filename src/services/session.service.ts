@@ -28,14 +28,14 @@ export const reIssueAccessToken = async ({
   refreshToken: string;
 }) => {
   const { decoded } = verifyJwt(refreshToken, "refreshTokenPublicKey");
-  if (!decoded || !get(decoded, "session")) return false;
+  if (!decoded || !get(decoded, "session")) return "";
 
   const session = await SessionModel.findById(get(decoded, "session"));
-  if (!session || !session.valid) return false;
+  if (!session || !session.valid) return "";
 
   const user = await findUser({ _id: session.user });
   /* istanbul ignore next */
-  if (!user) return false;
+  if (!user) return "";
 
   const accessToken = signJwt(
     { ...user, session: session._id },

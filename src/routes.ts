@@ -1,4 +1,4 @@
-import { Express, Request, Response } from "express";
+import { Express } from "express";
 import {
   createProductHandler,
   deleteProductHandler,
@@ -10,8 +10,10 @@ import {
   deleteSessionHandler,
   getUserSessionsHandler,
 } from "controllers/session.controller";
-import { createUserHandler } from "controllers/user.controller";
-import requireUser from "middleware/requireUser";
+import {
+  createUserHandler,
+  getCurrentUserHandler,
+} from "controllers/user.controller";
 import validateResource from "middleware/validateResource";
 import {
   createProductSchema,
@@ -21,10 +23,13 @@ import {
 } from "schemas/product.schema";
 import { createSessionSchema } from "schemas/session.schema";
 import { createUserSchema } from "schemas/user.schema";
+import deserializeUser from "middleware/deserializeUser";
 
 const routes = (app: Express) => {
   // User
   app.post("/api/users", validateResource(createUserSchema), createUserHandler);
+
+  app.get("/api/auth", deserializeUser, getCurrentUserHandler);
 
   // Session
   app.post(
@@ -33,20 +38,20 @@ const routes = (app: Express) => {
     createUserSessionHandler
   );
 
-  app.get("/api/sessions", requireUser, getUserSessionsHandler);
+  app.get("/api/sessions", deserializeUser, getUserSessionsHandler);
 
-  app.delete("/api/sessions", requireUser, deleteSessionHandler);
+  app.delete("/api/sessions", deserializeUser, deleteSessionHandler);
 
   // Product
   app.post(
     "/api/products",
-    [requireUser, validateResource(createProductSchema)],
+    [deserializeUser, validateResource(createProductSchema)],
     createProductHandler
   );
 
   app.put(
     "/api/products/:productId",
-    [requireUser, validateResource(updateProductSchema)],
+    [deserializeUser, validateResource(updateProductSchema)],
     updateProductHandler
   );
 
@@ -58,7 +63,7 @@ const routes = (app: Express) => {
 
   app.delete(
     "/api/products/:productId",
-    [requireUser, validateResource(deleteProductSchema)],
+    [deserializeUser, validateResource(deleteProductSchema)],
     deleteProductHandler
   );
 };
